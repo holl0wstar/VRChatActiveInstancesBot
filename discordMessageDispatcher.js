@@ -37,7 +37,36 @@ function renderUserList(users) {
     world = await vrcBot.getWorldDetails(instance.split(":")[0]);
     instanceDetails = await vrcBot.getInstanceDetails(instance);
   
-    await discordBot.postMessage(
+    if(instanceDetails.hawOwnProperty('private'))
+    {
+      return;
+    }
+      
+    if(instanceDetails.hasOwnProperty('friends'))
+    {
+      await discordBot.postMessage(
+      {
+        embed: {
+          title: `${world.name} ${instanceDetails.name}`,
+          description: `Online: ${users.length} friends, ${instanceDetails.n_users} players`,
+          timestamp: new Date().toISOString(),
+          fields: [
+            {
+              name: "Who is in here?",
+              value: renderUserList(users),
+            },
+          ],
+          image: {
+            url: world.imageUrl,
+          },
+        },
+      },
+      instance
+    );
+    }
+    else
+    {
+      await discordBot.postMessage(
       {
         embed: {
           title: `${world.name} ${instanceDetails.name}`,
@@ -58,7 +87,8 @@ function renderUserList(users) {
         },
       },
       instance
-    );
+    );   
+    }
   }
   
   export async function postOnlineFriends(onlineFriends) {
